@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Lab 4.2a - เลือกสินค้า</title>
+<style>
+  body{font-family:'Sarabun',sans-serif; background:#f4f6f9; padding:20px;}
+  .box{max-width:480px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1);}
+  h1{font-size:20px; color:#2f4c8f;}
+  .item{display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee;}
+  button{padding:6px 12px; background:#2f4c8f; color:#fff; border:none; border-radius:4px; cursor:pointer;}
+  a{display:inline-block; margin-top:16px; color:#2f4c8f;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Lab 4.2a: เลือกสินค้า (ตะกร้าชั่วคราว)</h1>
+  <div id="productList"></div>
+  <a href="lab4_2b.html">ไปดูตะกร้าสินค้า →</a>
+</div>
+
+<script>
+const products = [
+  { name: "เสื้อยืด", price: 250 },
+  { name: "กางเกงยีนส์", price: 590 },
+  { name: "รองเท้าผ้าใบ", price: 890 },
+  { name: "หมวกแก๊ป", price: 150 },
+];
+
+function render() {
+  document.getElementById("productList").innerHTML = products.map((p, i) =>
+    `<div class="item"><span>${p.name} — ${p.price} บาท</span>
+     <button onclick="addToCart(${i})">เพิ่มลงตะกร้า</button></div>`
+  ).join("");
+}
+
+function addToCart(index) {
+  let cart = JSON.parse(sessionStorage.getItem("cart")) || [];
+  cart.push(products[index]);
+  sessionStorage.setItem("cart", JSON.stringify(cart));
+  alert(`${products[index].name} ถูกเพิ่มลงตะกร้าแล้ว`);
+}
+
+render();
+</script>
+</body>
+</html>

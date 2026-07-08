@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Lab 5.1 - คำนวณราคาสินค้า (if-else + Checkbox)</title>
+<style>
+  body{font-family:'Sarabun',sans-serif; background:#f4f6f9; padding:20px;}
+  .box{max-width:460px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1);}
+  h1{font-size:20px; color:#2f4c8f;}
+  .item{display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid #eee;}
+  button{margin-top:16px; padding:10px 16px; background:#2f4c8f; color:#fff; border:none; border-radius:4px; cursor:pointer;}
+  #result{margin-top:16px; background:#f8f9fc; padding:14px; border-radius:6px; font-size:14px;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Lab 5.1: ระบบคำนวณราคาสินค้า</h1>
+  <div id="productList"></div>
+  <button onclick="calculateTotal()">คำนวณราคารวม</button>
+  <div id="result"></div>
+</div>
+
+<script>
+const products = [
+  { id: 1, name: "หูฟังไร้สาย", price: 590 },
+  { id: 2, name: "เมาส์ไร้สาย", price: 320 },
+  { id: 3, name: "คีย์บอร์ด", price: 750 },
+  { id: 4, name: "แบตสำรอง", price: 480 },
+  { id: 5, name: "กระเป๋าโน้ตบุ๊ก", price: 690 },
+];
+
+function renderProducts() {
+  document.getElementById("productList").innerHTML = products.map(p =>
+    `<div class="item">
+      <input type="checkbox" id="p${p.id}" value="${p.price}">
+      <label for="p${p.id}">${p.name} — ${p.price} บาท</label>
+    </div>`
+  ).join("");
+}
+
+function calculateTotal() {
+  let total = 0;
+  products.forEach(p => {
+    const checkbox = document.getElementById(`p${p.id}`);
+    if (checkbox.checked) total += p.price;
+  });
+
+  let discount = 0;
+  if (total > 1000) {
+    discount = total * 0.15;
+  } else if (total > 500) {
+    discount = total * 0.10;
+  }
+
+  const finalPrice = total - discount;
+
+  document.getElementById("result").innerHTML = `
+    <p>ราคารวมก่อนส่วนลด: ${total.toFixed(2)} บาท</p>
+    <p>ส่วนลด: ${discount.toFixed(2)} บาท</p>
+    <p><strong>ราคาสุทธิ: ${finalPrice.toFixed(2)} บาท</strong></p>
+  `;
+}
+
+renderProducts();
+</script>
+</body>
+</html>

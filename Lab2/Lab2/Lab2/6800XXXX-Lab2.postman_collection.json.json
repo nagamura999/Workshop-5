@@ -1,0 +1,127 @@
+{
+  "info": {
+    "name": "6800XXXX-Lab2",
+    "description": "Lab#2: การทดสอบระบบด้วย Postman - CSI204",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET - Public API (list posts)",
+      "request": {
+        "method": "GET",
+        "url": "https://jsonplaceholder.typicode.com/posts"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Response is an array', function () {",
+              "  pm.expect(pm.response.json()).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET - Post by ID",
+      "request": {
+        "method": "GET",
+        "url": "https://jsonplaceholder.typicode.com/posts/1"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Response has id 1', function () {",
+              "  pm.expect(pm.response.json().id).to.eql(1);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "POST - Create new post",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 1,\n  \"id\": 101,\n  \"title\": \"CSI204 Lab Testing\",\n  \"body\": \"Testing API with Postman\"\n}"
+        },
+        "url": "https://jsonplaceholder.typicode.com/posts"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "pm.test('Response has title', function () {",
+              "  var jsonData = pm.response.json();",
+              "  pm.expect(jsonData.title).to.eql('CSI204 Lab Testing');",
+              "});",
+              "pm.test('Response time < 500ms', function () {",
+              "  pm.expect(pm.response.responseTime).to.be.below(500);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "PUT - Update post",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": 1,\n  \"title\": \"Updated title\",\n  \"body\": \"Updated body\",\n  \"userId\": 1\n}"
+        },
+        "url": "https://jsonplaceholder.typicode.com/posts/1"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "DELETE - Delete post",
+      "request": {
+        "method": "DELETE",
+        "url": "https://jsonplaceholder.typicode.com/posts/1"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

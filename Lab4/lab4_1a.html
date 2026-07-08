@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Lab 4.1a - บันทึกข้อมูลส่วนตัว</title>
+<style>
+  body{font-family:'Sarabun',sans-serif; background:#f4f6f9; padding:20px;}
+  .box{max-width:420px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1);}
+  h1{font-size:20px; color:#2f4c8f;}
+  label{display:block; margin-top:12px; font-size:14px;}
+  input, select{width:100%; padding:8px; margin-top:4px; border:1px solid #ccc; border-radius:4px;}
+  button{margin-top:16px; padding:10px 16px; background:#2f4c8f; color:#fff; border:none; border-radius:4px; cursor:pointer;}
+  a{display:inline-block; margin-top:14px; color:#2f4c8f;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Lab 4.1a: ฟอร์มเก็บข้อมูลส่วนตัว</h1>
+  <form onsubmit="return saveProfile(event)">
+    <label>ชื่อ</label>
+    <input type="text" id="name" required>
+    <label>อีเมล</label>
+    <input type="email" id="email" required>
+    <label>เบอร์โทร</label>
+    <input type="text" id="phone" required>
+    <label>ธีมที่ชื่นชอบ</label>
+    <select id="theme">
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="blue">Blue</option>
+    </select>
+    <button type="submit">บันทึกข้อมูล</button>
+  </form>
+  <a href="lab4_1b.html">ไปหน้าแสดงข้อมูล →</a>
+</div>
+
+<script>
+function saveProfile(e) {
+  e.preventDefault();
+  const profile = {
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    phone: document.getElementById("phone").value,
+    theme: document.getElementById("theme").value
+  };
+  localStorage.setItem("profile", JSON.stringify(profile));
+  alert("บันทึกข้อมูลเรียบร้อย! ไปที่หน้าแสดงข้อมูลเพื่อดูผลลัพธ์");
+  return false;
+}
+</script>
+</body>
+</html>

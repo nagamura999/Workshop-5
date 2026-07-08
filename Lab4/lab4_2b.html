@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Lab 4.2b - ตะกร้าสินค้า</title>
+<style>
+  body{font-family:'Sarabun',sans-serif; background:#f4f6f9; padding:20px;}
+  .box{max-width:480px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1);}
+  h1{font-size:20px; color:#2f4c8f;}
+  .item{display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;}
+  #total{margin-top:14px; font-weight:bold; font-size:16px;}
+  .note{background:#f8f9fc; padding:12px; border-radius:6px; margin-top:20px; font-size:13.5px; line-height:1.6;}
+  a{display:inline-block; margin-top:14px; color:#2f4c8f;}
+  button{margin-top:10px; padding:8px 14px; background:#b00020; color:#fff; border:none; border-radius:4px; cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Lab 4.2b: ตะกร้าสินค้า (sessionStorage)</h1>
+  <div id="cartList"></div>
+  <div id="total"></div>
+  <button onclick="clearCart()">ล้างตะกร้า</button>
+  <a href="lab4_2a.html">← กลับไปเลือกสินค้า</a>
+
+  <div class="note">
+    <b>เปรียบเทียบ localStorage vs sessionStorage:</b><br>
+    <b>localStorage</b> เก็บข้อมูลถาวรในเบราว์เซอร์ ไม่หายแม้ปิดแท็บหรือปิดเบราว์เซอร์ไปแล้ว
+    เหมาะกับข้อมูลที่ต้องการให้อยู่ยาวนาน เช่น การตั้งค่าธีม หรือข้อมูลผู้ใช้ที่เข้าสู่ระบบไว้<br><br>
+    <b>sessionStorage</b> เก็บข้อมูลเฉพาะช่วงที่แท็บ/หน้าต่างนั้นยังเปิดอยู่เท่านั้น
+    เมื่อปิดแท็บข้อมูลจะถูกลบทันที เหมาะกับข้อมูลชั่วคราวระหว่างการใช้งาน เช่น ตะกร้าสินค้าในตัวอย่างนี้
+  </div>
+</div>
+
+<script>
+function renderCart() {
+  const cart = JSON.parse(sessionStorage.getItem("cart")) || [];
+  if (cart.length === 0) {
+    document.getElementById("cartList").innerHTML = "<p>ตะกร้าว่างเปล่า</p>";
+    document.getElementById("total").innerText = "";
+    return;
+  }
+  document.getElementById("cartList").innerHTML = cart.map(item =>
+    `<div class="item"><span>${item.name}</span><span>${item.price} บาท</span></div>`
+  ).join("");
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+  document.getElementById("total").innerText = `รวมทั้งหมด: ${total} บาท`;
+}
+
+function clearCart() {
+  sessionStorage.removeItem("cart");
+  renderCart();
+}
+
+renderCart();
+</script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Lab 8.1 - ตารางผ่อนชำระด้วย loop</title>
+<style>
+  body{font-family:'Sarabun',sans-serif; background:#f4f6f9; padding:20px;}
+  .box{max-width:600px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1);}
+  h1{font-size:20px; color:#2f4c8f;}
+  label{display:block; margin-top:12px; font-size:14px;}
+  input{width:100%; padding:8px; margin-top:4px; border:1px solid #ccc; border-radius:4px;}
+  button{margin-top:16px; padding:10px 16px; background:#2f4c8f; color:#fff; border:none; border-radius:4px; cursor:pointer;}
+  table{width:100%; border-collapse:collapse; margin-top:14px; font-size:13px;}
+  th,td{border:1px solid #ddd; padding:5px; text-align:right;}
+  th{background:#eef1f7;}
+  #summary{margin-top:14px; background:#f8f9fc; padding:12px; border-radius:6px; font-size:14px;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Lab 8.1: ระบบคำนวณสินเชื่อ (ตารางผ่อนชำระ)</h1>
+  <label>จำนวนเงินกู้ (บาท)</label>
+  <input type="number" id="loanAmount" placeholder="เช่น 500000">
+  <label>อัตราดอกเบี้ย (% ต่อปี)</label>
+  <input type="number" id="interestRate" value="6">
+  <label>ระยะเวลา (เดือน)</label>
+  <input type="number" id="months" value="24">
+  <button onclick="generateAmortizationTable()">สร้างตารางผ่อนชำระ</button>
+  <div id="summary"></div>
+  <table id="amortizationTable"></table>
+</div>
+
+<script>
+function generateAmortizationTable() {
+  let loanAmount = parseFloat(document.getElementById("loanAmount").value);
+  let interestRate = parseFloat(document.getElementById("interestRate").value) / 100 / 12;
+  let months = parseInt(document.getElementById("months").value);
+
+  if ([loanAmount, months].some(isNaN) || loanAmount <= 0 || months <= 0) {
+    document.getElementById("summary").innerHTML = "<b style='color:#b00020'>กรุณากรอกข้อมูลให้ถูกต้อง</b>";
+    return;
+  }
+
+  let monthlyPayment = (loanAmount * interestRate * Math.pow(1 + interestRate, months)) /
+                        (Math.pow(1 + interestRate, months) - 1);
+
+  let tableHtml = "<tr><th>งวดที่</th><th>ค่างวด</th><th>ดอกเบี้ย</th><th>เงินต้น</th><th>คงเหลือ</th></tr>";
+  let remaining = loanAmount;
+  let totalInterest = 0;
+
+  // ใช้ for loop สร้างตารางผ่อนชำระ
+  for (let i = 1; i <= months; i++) {
+    let interest = remaining * interestRate;
+    let principal = monthlyPayment - interest;
+    remaining -= principal;
+    totalInterest += interest;
+
+    tableHtml += `<tr><td>${i}</td>
+                  <td>${monthlyPayment.toFixed(2)}</td>
+                  <td>${interest.toFixed(2)}</td>
+                  <td>${principal.toFixed(2)}</td>
+                  <td>${Math.max(0, remaining).toFixed(2)}</td></tr>`;
+  }
+
+  document.getElementById("amortizationTable").innerHTML = tableHtml;
+  document.getElementById("summary").innerHTML = `
+    <p>ค่างวดต่อเดือน: ${monthlyPayment.toFixed(2)} บาท</p>
+    <p>รวมเงินที่ต้องชำระทั้งสิ้น: ${(monthlyPayment * months).toFixed(2)} บาท</p>
+    <p>ดอกเบี้ยรวม: ${totalInterest.toFixed(2)} บาท</p>
+  `;
+}
+</script>
+</body>
+</html>

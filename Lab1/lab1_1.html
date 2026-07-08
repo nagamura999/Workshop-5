@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Lab 1.1 - ตัวแปรและชนิดข้อมูล</title>
+    <style>
+      body {
+        font-family: "Sarabun", sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #f4f6f9;
+      }
+      .box {
+        max-width: 700px;
+        margin: auto;
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #2f4c8f;
+        font-size: 20px;
+      }
+      p {
+        line-height: 1.6;
+      }
+      code {
+        background: #eef1f7;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <h1>Lab 1.1: สร้างตัวแปรและแสดงชนิดข้อมูล</h1>
+      <div id="output"></div>
+    </div>
+
+    <script>
+      // 1. สร้างตัวแปรชนิดต่าง ๆ
+      let studentName = "Jay W. Lee"; // String
+      let studentAge = 19; // Number
+      let isGraduated = false; // Boolean
+      let scores = [85, 90, 78]; // Array
+      let student = { id: "6800123A", name: "Jay W. Lee", grade: "A" }; // Object
+
+      // 2. แสดงผลใน console
+      console.log("Name:", studentName, "Type:", typeof studentName);
+      console.log("Age:", studentAge, "Type:", typeof studentAge);
+      console.log("Graduated:", isGraduated, "Type:", typeof isGraduated);
+      console.log("Scores:", scores, "Type:", typeof scores);
+      console.log("Student Object:", student, "Type:", typeof student);
+
+      // 3. แสดงผลบนหน้าเว็บ
+      document.getElementById("output").innerHTML = `
+    <p><b>ชื่อนักเรียน (String):</b> ${studentName}</p>
+    <p><b>อายุ (Number):</b> ${studentAge}</p>
+    <p><b>จบการศึกษาแล้วหรือไม่ (Boolean):</b> ${isGraduated}</p>
+    <p><b>คะแนน (Array):</b> ${scores.join(", ")}</p>
+    <p><b>ข้อมูลนักเรียน (Object):</b> ${JSON.stringify(student)}</p>
+    <p><b>คะแนนเฉลี่ย:</b> ${(scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(2)}</p>
+  `;
+
+      // 4. ทดสอบการแปลงชนิดข้อมูล
+      let strNumber = "42.5";
+      let intVal = parseInt(strNumber);
+      let floatVal = parseFloat(strNumber);
+      let backToStr = String(studentAge);
+
+      document.getElementById("output").innerHTML += `
+    <hr>
+    <h3>ทดสอบการแปลงชนิดข้อมูล</h3>
+    <p><code>parseInt("42.5")</code> = ${intVal} (${typeof intVal})</p>
+    <p><code>parseFloat("42.5")</code> = ${floatVal} (${typeof floatVal})</p>
+    <p><code>String(${studentAge})</code> = "${backToStr}" (${typeof backToStr})</p>
+  `;
+    </script>
+  </body>
+</html>

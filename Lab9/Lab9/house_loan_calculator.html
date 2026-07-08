@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Lab 9 - ระบบคำนวณสินเชื่อบ้านแบบลดต้นลดดอก</title>
+<style>
+  body{font-family:'Sarabun',sans-serif; background:linear-gradient(135deg,#eef2fb,#f9fbff); padding:20px;}
+  .box{max-width:720px; margin:auto; background:#fff; padding:28px; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,.08);}
+  h1{font-size:22px; color:#2f4c8f; margin-bottom:4px;}
+  p.sub{color:#666; font-size:13.5px; margin-top:0;}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:16px;}
+  label{display:block; font-size:14px; margin-bottom:4px; color:#333;}
+  input, select{width:100%; padding:9px; border:1px solid #ccc; border-radius:6px; font-size:14px;}
+  button{margin-top:20px; width:100%; padding:12px; background:#2f4c8f; color:#fff; border:none; border-radius:6px; font-size:15px; cursor:pointer;}
+  button:hover{background:#233a6e;}
+  .error{color:#b00020; margin-top:10px; font-size:14px;}
+  .summary{margin-top:24px; display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .card{background:#f4f7fd; border-radius:8px; padding:14px; text-align:center;}
+  .card .label{font-size:12.5px; color:#666;}
+  .card .value{font-size:17px; font-weight:bold; color:#2f4c8f; margin-top:4px;}
+  table{width:100%; border-collapse:collapse; margin-top:18px; font-size:13px;}
+  th,td{border:1px solid #e2e6f0; padding:6px; text-align:right;}
+  th{background:#eef1f7;}
+  h2{font-size:16px; color:#333; margin-top:26px;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>🏠 ระบบคำนวณสินเชื่อบ้านแบบลดต้นลดดอก</h1>
+  <p class="sub">Mortgage Calculator (Effective Rate) — CSI204 Lab#9</p>
+
+  <div class="grid">
+    <div>
+      <label>ราคาบ้าน (บาท)</label>
+      <input type="number" id="housePrice" value="3000000">
+    </div>
+    <div>
+      <label>เงินดาวน์ (บาท)</label>
+      <input type="number" id="downPayment" value="300000">
+    </div>
+    <div>
+      <label>อัตราดอกเบี้ย (% ต่อปี)</label>
+      <input type="number" id="interestRate" value="5" step="0.01">
+    </div>
+    <div>
+      <label>ระยะเวลาผ่อน</label>
+      <select id="years">
+        <option value="10">10 ปี</option>
+        <option value="20">20 ปี</option>
+        <option value="30" selected>30 ปี</option>
+      </select>
+    </div>
+  </div>
+
+  <button onclick="calculateMortgage()">คำนวณสินเชื่อ</button>
+  <div id="error" class="error"></div>
+
+  <div id="summarySection" style="display:none">
+    <div class="summary">
+      <div class="card"><div class="label">วงเงินกู้สุทธิ</div><div class="value" id="sLoan"></div></div>
+      <div class="card"><div class="label">จำนวนงวดทั้งหมด</div><div class="value" id="sMonths"></div></div>
+      <div class="card"><div class="label">ค่างวดต่อเดือน</div><div class="value" id="sPayment"></div></div>
+      <div class="card"><div class="label">ดอกเบี้ยรวมทั้งสัญญา</div><div class="value" id="sInterest"></div></div>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <div class="label">ยอดชำระรวมทั้งหมด</div>
+      <div class="value" id="sTotal" style="font-size:20px;"></div>
+    </div>
+
+    <h2>ตารางผ่อนชำระ (12 งวดแรก)</h2>
+    <table>
+      <thead><tr><th>งวด</th><th>เงินต้น</th><th>ดอกเบี้ย</th><th>ยอดชำระ</th><th>คงเหลือ</th></tr></thead>
+      <tbody id="amortTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function formatTHB(num) {
+  return num.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " บาท";
+}
+
+function calculateMortgage() {
+  const housePrice = parseFloat(document.getElementById("housePrice").value);
+  const downPayment = parseFloat(document.getElementById("downPayment").value);
+  const annualRate = parseFloat(document.getElementById("interestRate").value);
+  const years = parseInt(document.getElementById("years").value);
+
+  const errorBox = document.getElementById("error");
+  errorBox.innerText = "";
+
+  // Validation
+  if ([housePrice, downPayment, annualRate, years].some(v => isNaN(v))) {
+    errorBox.innerText = "กรุณากรอกข้อมูลให้ครบทุกช่อง";
+    document.getElementById("summarySection").style.display = "none";
+    return;
+  }
+  if (housePrice <= 0 || downPayment < 0 || downPayment >= housePrice) {
+    errorBox.innerText = "เงินดาวน์ต้องน้อยกว่าราคาบ้าน และราคาบ้านต้องมากกว่า 0";
+    document.getElementById("summarySection").style.display = "none";
+    return;
+  }
+  if (annualRate <= 0 || annualRate > 30) {
+    errorBox.innerText = "อัตราดอกเบี้ยไม่ถูกต้อง";
+    document.getElementById("summarySection").style.display = "none";
+    return;
+  }
+
+  // คำนวณวงเงินกู้และจำนวนงวด
+  const loanAmount = housePrice - downPayment;
+  const months = years * 12;
+  const monthlyRate = annualRate / 100 / 12;
+
+  // ค่างวดรายเดือนแบบลดต้นลดดอก (Effective Rate / PMT formula)
+  const monthlyPayment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, months)) /
+                          (Math.pow(1 + monthlyRate, months) - 1);
+
+  // สร้างตารางผ่อนชำระทั้งหมด เพื่อคำนวณดอกเบี้ยรวมที่ถูกต้อง
+  let remaining = loanAmount;
+  let totalInterest = 0;
+  let amortRows = "";
+
+  for (let i = 1; i <= months; i++) {
+    const interest = remaining * monthlyRate;
+    const principal = monthlyPayment - interest;
+    remaining -= principal;
+    totalInterest += interest;
+
+    if (i <= 12) {
+      amortRows += `<tr>
+        <td>${i}</td>
+        <td>${principal.toFixed(2)}</td>
+        <td>${interest.toFixed(2)}</td>
+        <td>${monthlyPayment.toFixed(2)}</td>
+        <td>${Math.max(0, remaining).toFixed(2)}</td>
+      </tr>`;
+    }
+  }
+
+  const totalPaid = monthlyPayment * months;
+
+  // แสดงผลลัพธ์
+  document.getElementById("sLoan").innerText = formatTHB(loanAmount);
+  document.getElementById("sMonths").innerText = months + " งวด";
+  document.getElementById("sPayment").innerText = formatTHB(monthlyPayment);
+  document.getElementById("sInterest").innerText = formatTHB(totalInterest);
+  document.getElementById("sTotal").innerText = formatTHB(totalPaid);
+  document.getElementById("amortTable").innerHTML = amortRows;
+  document.getElementById("summarySection").style.display = "block";
+}
+
+// คำนวณครั้งแรกโดยอัตโนมัติด้วยค่าตัวอย่าง
+calculateMortgage();
+</script>
+</body>
+</html>

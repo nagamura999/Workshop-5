@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Lab 4.1b - แสดงข้อมูลที่บันทึกไว้</title>
+<style>
+  body{font-family:'Sarabun',sans-serif; padding:20px; transition: background .3s, color .3s;}
+  body.light{background:#f4f6f9; color:#222;}
+  body.dark{background:#1e1e2e; color:#eee;}
+  body.blue{background:#dbe6fb; color:#0b2a5c;}
+  .box{max-width:420px; margin:auto; background:rgba(255,255,255,.85); color:#222; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1);}
+  h1{font-size:20px; color:#2f4c8f;}
+  p{margin:8px 0;}
+  button{margin-top:10px; margin-right:8px; padding:8px 14px; border:none; border-radius:4px; cursor:pointer; background:#2f4c8f; color:#fff;}
+  button.danger{background:#b00020;}
+  a{display:inline-block; margin-top:14px; color:#2f4c8f;}
+</style>
+</head>
+<body class="light">
+<div class="box">
+  <h1>Lab 4.1b: ข้อมูลที่บันทึกไว้</h1>
+  <div id="profileInfo">ยังไม่มีข้อมูล</div>
+  <button onclick="cycleTheme()">เปลี่ยน Theme</button>
+  <button class="danger" onclick="clearProfile()">ล้างข้อมูล</button>
+  <br><a href="lab4_1a.html">← กลับไปหน้าฟอร์ม</a>
+</div>
+
+<script>
+function loadProfile() {
+  const data = JSON.parse(localStorage.getItem("profile"));
+  if (!data) {
+    document.getElementById("profileInfo").innerText = "ยังไม่มีข้อมูล กรุณากรอกฟอร์มก่อน";
+    return;
+  }
+  document.getElementById("profileInfo").innerHTML = `
+    <p><b>ชื่อ:</b> ${data.name}</p>
+    <p><b>อีเมล:</b> ${data.email}</p>
+    <p><b>เบอร์โทร:</b> ${data.phone}</p>
+    <p><b>ธีม:</b> ${data.theme}</p>
+  `;
+  document.body.className = data.theme;
+}
+
+function cycleTheme() {
+  const themes = ["light", "dark", "blue"];
+  const current = themes.indexOf(document.body.className);
+  const next = themes[(current + 1) % themes.length];
+  document.body.className = next;
+  const data = JSON.parse(localStorage.getItem("profile")) || {};
+  data.theme = next;
+  localStorage.setItem("profile", JSON.stringify(data));
+}
+
+function clearProfile() {
+  localStorage.removeItem("profile");
+  document.body.className = "light";
+  loadProfile();
+}
+
+loadProfile();
+</script>
+</body>
+</html>

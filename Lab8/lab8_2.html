@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Lab 8.2 - ระบบขายสินค้า (for/while/do-while)</title>
+<style>
+  body{font-family:'Sarabun',sans-serif; background:#f4f6f9; padding:20px;}
+  .box{max-width:640px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1);}
+  h1{font-size:20px; color:#2f4c8f;}
+  h2{font-size:16px; margin-top:22px; color:#333;}
+  table{width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;}
+  th,td{border:1px solid #ddd; padding:5px; text-align:center;}
+  th{background:#eef1f7;}
+  #summary{margin-top:16px; background:#f8f9fc; padding:14px; border-radius:6px; font-size:14px;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Lab 8.2: ระบบขายสินค้า</h1>
+
+  <h2>ตารางสินค้า (สร้างด้วย for loop)</h2>
+  <table id="tableFor"></table>
+
+  <h2>ตารางสินค้า (สร้างด้วย while loop)</h2>
+  <table id="tableWhile"></table>
+
+  <h2>ตารางสินค้า (สร้างด้วย do-while loop)</h2>
+  <table id="tableDoWhile"></table>
+
+  <div id="summary"></div>
+</div>
+
+<script>
+const products = [
+  { name: "Keyboard",   price: 1200, qty: 2 },
+  { name: "Mouse",      price: 500,  qty: 3 },
+  { name: "Monitor",    price: 4500, qty: 1 },
+  { name: "Speaker",    price: 1500, qty: 1 },
+  { name: "Headphones", price: 800,  qty: 2 },
+];
+
+function headerRow() {
+  return "<tr><th>สินค้า</th><th>ราคา</th><th>จำนวน</th><th>รวม</th></tr>";
+}
+
+// 1) สร้างตารางด้วย for loop
+function buildWithFor() {
+  let html = headerRow();
+  for (let i = 0; i < products.length; i++) {
+    const p = products[i];
+    html += `<tr><td>${p.name}</td><td>${p.price}</td><td>${p.qty}</td><td>${p.price * p.qty}</td></tr>`;
+  }
+  document.getElementById("tableFor").innerHTML = html;
+}
+
+// 2) สร้างตารางด้วย while loop
+function buildWithWhile() {
+  let html = headerRow();
+  let i = 0;
+  while (i < products.length) {
+    const p = products[i];
+    html += `<tr><td>${p.name}</td><td>${p.price}</td><td>${p.qty}</td><td>${p.price * p.qty}</td></tr>`;
+    i++;
+  }
+  document.getElementById("tableWhile").innerHTML = html;
+}
+
+// 3) สร้างตารางด้วย do-while loop
+function buildWithDoWhile() {
+  let html = headerRow();
+  let i = 0;
+  do {
+    const p = products[i];
+    html += `<tr><td>${p.name}</td><td>${p.price}</td><td>${p.qty}</td><td>${p.price * p.qty}</td></tr>`;
+    i++;
+  } while (i < products.length);
+  document.getElementById("tableDoWhile").innerHTML = html;
+}
+
+// คำนวณราคารวม ส่วนลด และ VAT
+function calculateSummary() {
+  let subtotal = 0;
+  for (let i = 0; i < products.length; i++) {
+    subtotal += products[i].price * products[i].qty;
+  }
+
+  let discountRate = 0;
+  if (subtotal >= 10000) {
+    discountRate = 0.10;
+  } else if (subtotal >= 5000) {
+    discountRate = 0.05;
+  }
+
+  const discount = subtotal * discountRate;
+  const afterDiscount = subtotal - discount;
+  const vat = afterDiscount * 0.07;
+  const total = afterDiscount + vat;
+
+  document.getElementById("summary").innerHTML = `
+    <p>ยอดรวมก่อนส่วนลด: ${subtotal.toLocaleString()} บาท</p>
+    <p>ส่วนลด (${(discountRate*100)}%): ${discount.toFixed(2)} บาท</p>
+    <p>ยอดหลังหักส่วนลด: ${afterDiscount.toFixed(2)} บาท</p>
+    <p>ภาษีมูลค่าเพิ่ม 7%: ${vat.toFixed(2)} บาท</p>
+    <p><strong>ยอดสุทธิที่ต้องชำระ: ${total.toFixed(2)} บาท</strong></p>
+  `;
+}
+
+buildWithFor();
+buildWithWhile();
+buildWithDoWhile();
+calculateSummary();
+</script>
+</body>
+</html>

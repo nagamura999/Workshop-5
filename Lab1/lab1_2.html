@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Lab 1.2 - Pseudocode</title>
+<style>
+  body { font-family:'Sarabun',sans-serif; margin:0; padding:20px; background:#f4f6f9;}
+  .box { max-width:750px; margin:auto; background:#fff; border-radius:8px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,.1);}
+  h1{color:#2f4c8f; font-size:20px;} h2{font-size:16px; color:#444; margin-top:24px;}
+  pre{background:#1e1e2e; color:#d4d4d4; padding:14px; border-radius:6px; overflow-x:auto; font-size:14px;}
+  input{padding:6px; margin:4px 4px 4px 0; border:1px solid #ccc; border-radius:4px;}
+  button{padding:6px 14px; background:#2f4c8f; color:#fff; border:none; border-radius:4px; cursor:pointer;}
+  .result{margin-top:8px; font-weight:bold; color:#155724;}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>Lab 1.2: เขียน Pseudocode</h1>
+
+<h2>1) คำนวณพื้นที่วงกลม</h2>
+<pre>
+BEGIN
+  INPUT radius
+  SET PI = 3.14159
+  SET area = PI * radius * radius
+  OUTPUT "Area of the circle is: " + area
+END
+</pre>
+<input type="number" id="radius" placeholder="รัศมี (radius)">
+<button onclick="calcArea()">คำนวณ</button>
+<div class="result" id="areaResult"></div>
+
+<h2>2) คำนวณเกรดจากคะแนน</h2>
+<pre>
+BEGIN
+  INPUT score      // รับค่า 0-100
+  IF score >= 80 THEN grade = "A"
+  ELSE IF score >= 70 THEN grade = "B"
+  ELSE IF score >= 60 THEN grade = "C"
+  ELSE IF score >= 50 THEN grade = "D"
+  ELSE grade = "F"
+  OUTPUT grade
+END
+</pre>
+<input type="number" id="score" placeholder="คะแนน (0-100)">
+<button onclick="calcGrade()">คำนวณ</button>
+<div class="result" id="gradeResult"></div>
+
+<h2>3) หาค่าสูงสุดใน 3 จำนวน</h2>
+<pre>
+BEGIN
+  INPUT a, b, c
+  SET max = a
+  IF b > max THEN max = b
+  IF c > max THEN max = c
+  OUTPUT max
+END
+</pre>
+<input type="number" id="n1" placeholder="จำนวนที่ 1">
+<input type="number" id="n2" placeholder="จำนวนที่ 2">
+<input type="number" id="n3" placeholder="จำนวนที่ 3">
+<button onclick="calcMax()">หาค่าสูงสุด</button>
+<div class="result" id="maxResult"></div>
+</div>
+
+<script>
+function calcArea(){
+  const r = parseFloat(document.getElementById("radius").value);
+  if(isNaN(r)){ document.getElementById("areaResult").innerText = "กรุณากรอกตัวเลข"; return; }
+  const area = Math.PI * r * r;
+  document.getElementById("areaResult").innerText = `พื้นที่วงกลม = ${area.toFixed(2)}`;
+}
+function calcGrade(){
+  const s = parseFloat(document.getElementById("score").value);
+  if(isNaN(s) || s < 0 || s > 100){ document.getElementById("gradeResult").innerText = "กรุณากรอกคะแนน 0-100"; return; }
+  let grade;
+  if(s >= 80) grade = "A";
+  else if(s >= 70) grade = "B";
+  else if(s >= 60) grade = "C";
+  else if(s >= 50) grade = "D";
+  else grade = "F";
+  document.getElementById("gradeResult").innerText = `เกรดที่ได้ = ${grade}`;
+}
+function calcMax(){
+  const a = parseFloat(document.getElementById("n1").value);
+  const b = parseFloat(document.getElementById("n2").value);
+  const c = parseFloat(document.getElementById("n3").value);
+  if([a,b,c].some(isNaN)){ document.getElementById("maxResult").innerText = "กรุณากรอกให้ครบทั้ง 3 ช่อง"; return; }
+  document.getElementById("maxResult").innerText = `ค่าสูงสุด = ${Math.max(a,b,c)}`;
+}
+</script>
+</body>
+</html>

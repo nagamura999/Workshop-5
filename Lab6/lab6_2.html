@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Lab 6.2 - กรองสินค้าตามหมวดหมู่</title>
+<style>
+  body{font-family:'Sarabun',sans-serif; background:#f4f6f9; padding:20px;}
+  .box{max-width:480px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1);}
+  h1{font-size:20px; color:#2f4c8f;}
+  select{width:100%; padding:8px; margin:10px 0; border:1px solid #ccc; border-radius:4px;}
+  table{width:100%; border-collapse:collapse; font-size:14px;}
+  th,td{border:1px solid #ddd; padding:6px; text-align:center;}
+  th{background:#eef1f7;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Lab 6.2: กรองสินค้าตามหมวดหมู่</h1>
+  <select id="categoryFilter" onchange="filterProducts()">
+    <option value="ทั้งหมด">ทั้งหมด</option>
+    <option value="เสื้อผ้า">เสื้อผ้า</option>
+    <option value="อุปกรณ์">อุปกรณ์</option>
+    <option value="อาหาร">อาหาร</option>
+  </select>
+  <table>
+    <thead>
+      <tr><th>สินค้า</th><th>หมวดหมู่</th><th>ราคา</th><th>สต็อก</th></tr>
+    </thead>
+    <tbody id="productTable"></tbody>
+  </table>
+</div>
+
+<script>
+const products = [
+  { name: "เสื้อยืด",        category: "เสื้อผ้า", price: 250, stock: 30 },
+  { name: "กางเกงยีนส์",     category: "เสื้อผ้า", price: 590, stock: 15 },
+  { name: "หูฟังไร้สาย",     category: "อุปกรณ์", price: 890, stock: 8  },
+  { name: "เมาส์ไร้สาย",     category: "อุปกรณ์", price: 320, stock: 20 },
+  { name: "ขนมปังโฮลวีต",   category: "อาหาร",   price: 45,  stock: 50 },
+  { name: "กาแฟคั่วบด",      category: "อาหาร",   price: 180, stock: 25 },
+];
+
+function filterProducts() {
+  const selected = document.getElementById("categoryFilter").value;
+  let filtered;
+
+  if (selected === "ทั้งหมด") {
+    filtered = products;
+  } else if (selected === "เสื้อผ้า") {
+    filtered = products.filter(p => p.category === "เสื้อผ้า");
+  } else if (selected === "อุปกรณ์") {
+    filtered = products.filter(p => p.category === "อุปกรณ์");
+  } else if (selected === "อาหาร") {
+    filtered = products.filter(p => p.category === "อาหาร");
+  }
+
+  document.getElementById("productTable").innerHTML = filtered.map(p =>
+    `<tr><td>${p.name}</td><td>${p.category}</td><td>${p.price}</td><td>${p.stock}</td></tr>`
+  ).join("");
+}
+
+filterProducts();
+</script>
+</body>
+</html>

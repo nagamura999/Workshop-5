@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Lab 7.1 - จัดการข้อมูลนักเรียน</title>
+<style>
+  body{font-family:'Sarabun',sans-serif; background:#f4f6f9; padding:20px;}
+  .box{max-width:520px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1);}
+  h1{font-size:20px; color:#2f4c8f;}
+  table{width:100%; border-collapse:collapse; font-size:14px; margin-top:10px;}
+  th,td{border:1px solid #ddd; padding:6px; text-align:center;}
+  th{background:#eef1f7;}
+  #summary{margin-top:16px; background:#f8f9fc; padding:14px; border-radius:6px; font-size:14px;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Lab 7.1: ระบบจัดการข้อมูลนักเรียน</h1>
+  <table>
+    <thead><tr><th>ID</th><th>ชื่อ</th><th>คะแนนเฉลี่ย</th><th>เกรด</th></tr></thead>
+    <tbody id="studentTable"></tbody>
+  </table>
+  <div id="summary"></div>
+</div>
+
+<script>
+const students = [
+  { id: 1, name: "นันเดล จานสี",  scores: [85, 90, 88], grade: "A" },
+  { id: 2, name: "นันเนีย จานฟ่า", scores: [75, 88, 78], grade: "B" },
+  { id: 3, name: "นันฟ้า จานเรย",  scores: [95, 92, 94], grade: "A" },
+  { id: 4, name: "นันธา จานเลย",   scores: [65, 70, 68], grade: "C" },
+];
+
+function displayStudents() {
+  let tableHtml = "";
+  students.map(student => {
+    const avgScore = student.scores.reduce((a,b)=>a+b,0) / student.scores.length;
+    tableHtml += `<tr><td>${student.id}</td><td>${student.name}</td><td>${avgScore.toFixed(2)}</td><td>${student.grade}</td></tr>`;
+  });
+  document.getElementById("studentTable").innerHTML = tableHtml;
+
+  // นักเรียนที่ได้เกรด A
+  const gradeA = students.filter(s => s.grade === "A");
+
+  // ค่าเฉลี่ยรวมทั้งชั้น
+  const overallAvg = students.reduce((sum, s) => {
+    const studentAvg = s.scores.reduce((a,b)=>a+b,0) / s.scores.length;
+    return sum + studentAvg;
+  }, 0) / students.length;
+
+  document.getElementById("summary").innerHTML = `
+    <p><b>นักเรียนที่ได้เกรด A:</b> ${gradeA.map(s => s.name).join(", ")}</p>
+    <p><b>คะแนนเฉลี่ยรวมทั้งชั้น:</b> ${overallAvg.toFixed(2)}</p>
+  `;
+}
+
+displayStudents();
+</script>
+</body>
+</html>

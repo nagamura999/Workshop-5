@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Lab 3.2 - คำนวณค่างวดรถยนต์</title>
+<style>
+  body{font-family:'Sarabun',sans-serif; background:#f4f6f9; padding:20px;}
+  .box{max-width:480px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1);}
+  h1{font-size:20px; color:#2f4c8f;}
+  label{display:block; margin-top:12px; font-size:14px;}
+  input{width:100%; padding:8px; margin-top:4px; border:1px solid #ccc; border-radius:4px;}
+  button{margin-top:16px; padding:10px 16px; background:#2f4c8f; color:#fff; border:none; border-radius:4px; cursor:pointer;}
+  #result{margin-top:16px; background:#f8f9fc; padding:14px; border-radius:6px; font-size:14px;}
+  table{width:100%; border-collapse:collapse; margin-top:10px; font-size:13px;}
+  th,td{border:1px solid #ddd; padding:6px; text-align:right;}
+  th{background:#eef1f7;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Lab 3.2: ฟอร์มคำนวณค่างวดรถยนต์</h1>
+  <label>ราคารถ (บาท)</label>
+  <input type="number" id="carPrice" placeholder="เช่น 800000">
+  <label>เงินดาวน์ (บาท)</label>
+  <input type="number" id="downPayment" placeholder="เช่น 100000">
+  <label>อัตราดอกเบี้ย (% ต่อปี, รถยนต์ 2-5%)</label>
+  <input type="number" id="interestRate" value="3.5">
+  <label>ระยะเวลาผ่อน (เดือน)</label>
+  <input type="number" id="months" value="60">
+  <button onclick="calculateCarLoan()">คำนวณ</button>
+  <div id="result"></div>
+</div>
+
+<script>
+function calculateCarLoan() {
+  let carPrice = parseFloat(document.getElementById("carPrice").value);
+  let downPayment = parseFloat(document.getElementById("downPayment").value);
+  let loanAmount = carPrice - downPayment;
+  let interestRate = parseFloat(document.getElementById("interestRate").value) / 100 / 12;
+  let months = parseInt(document.getElementById("months").value);
+
+  if ([carPrice, downPayment, months].some(isNaN) || carPrice <= 0 || downPayment < 0 || downPayment >= carPrice || months <= 0) {
+    document.getElementById("result").innerHTML = "<b style='color:#b00020'>กรุณากรอกข้อมูลให้ครบและถูกต้อง (เงินดาวน์ต้องน้อยกว่าราคารถ)</b>";
+    return;
+  }
+
+  let monthlyPayment = (loanAmount * interestRate * Math.pow(1 + interestRate, months)) /
+                        (Math.pow(1 + interestRate, months) - 1);
+
+  // ตารางผ่อนชำระแบบย่อ (ทุก 12 เดือน)
+  let remaining = loanAmount;
+  let totalInterest = 0;
+  let tableHtml = "<table><tr><th>งวดที่</th><th>ค่างวด</th><th>คงเหลือโดยประมาณ</th></tr>";
+  for (let i = 1; i <= months; i++) {
+    let interest = remaining * interestRate;
+    let principal = monthlyPayment - interest;
+    remaining -= principal;
+    totalInterest += interest;
+    if (i % 12 === 0 || i === months) {
+      tableHtml += `<tr><td>${i}</td><td>${monthlyPayment.toFixed(2)}</td><td>${Math.max(0,remaining).toFixed(2)}</td></tr>`;
+    }
+  }
+  tableHtml += "</table>";
+
+  document.getElementById("result").innerHTML = `
+    <h4>สรุปสินเชื่อรถยนต์</h4>
+    <p>ราคารถ: ${carPrice.toLocaleString()} บาท</p>
+    <p>เงินดาวน์: ${downPayment.toLocaleString()} บาท</p>
+    <p>ยอดจัดไฟแนนซ์: ${loanAmount.toLocaleString()} บาท</p>
+    <p><strong>ค่างวดต่อเดือน: ${monthlyPayment.toFixed(2)} บาท</strong></p>
+    <p>ยอดรวมที่ต้องชำระ: ${(monthlyPayment*months).toFixed(2)} บาท</p>
+    <p>ดอกเบี้ยรวม: ${totalInterest.toFixed(2)} บาท</p>
+    <p>ตารางผ่อนชำระ (แสดงทุก 12 เดือน):</p>
+    ${tableHtml}
+  `;
+}
+</script>
+</body>
+</html>

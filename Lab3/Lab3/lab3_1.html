@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Lab 3.1 - คำนวณสินเชื่อบ้าน</title>
+<style>
+  body{font-family:'Sarabun',sans-serif; background:#f4f6f9; padding:20px;}
+  .box{max-width:480px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1);}
+  h1{font-size:20px; color:#2f4c8f;}
+  label{display:block; margin-top:12px; font-size:14px;}
+  input{width:100%; padding:8px; margin-top:4px; border:1px solid #ccc; border-radius:4px;}
+  button{margin-top:16px; padding:10px 16px; background:#2f4c8f; color:#fff; border:none; border-radius:4px; cursor:pointer;}
+  #result{margin-top:16px; background:#f8f9fc; padding:14px; border-radius:6px; font-size:14px;}
+  table{width:100%; border-collapse:collapse; margin-top:10px; font-size:13px;}
+  th,td{border:1px solid #ddd; padding:6px; text-align:right;}
+  th{background:#eef1f7;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Lab 3.1: ฟอร์มคำนวณสินเชื่อบ้าน</h1>
+  <label>เงินเดือน (บาท)</label>
+  <input type="number" id="salary" placeholder="เช่น 30000">
+  <label>จำนวนเงินกู้ (บาท)</label>
+  <input type="number" id="loanAmount" placeholder="เช่น 3000000">
+  <label>อัตราดอกเบี้ย (% ต่อปี)</label>
+  <input type="number" id="interestRate" value="5">
+  <label>ระยะเวลา (ปี)</label>
+  <input type="number" id="years" value="30">
+  <button onclick="calculateLoan()">คำนวณ</button>
+  <div id="result"></div>
+</div>
+
+<script>
+function calculateLoan() {
+  let monthlySalary = parseFloat(document.getElementById("salary").value);
+  let loanAmount = parseFloat(document.getElementById("loanAmount").value);
+  let interestRate = parseFloat(document.getElementById("interestRate").value) / 100 / 12;
+  let years = parseInt(document.getElementById("years").value);
+  let months = years * 12;
+
+  if ([monthlySalary, loanAmount, years].some(isNaN) || monthlySalary <= 0 || loanAmount <= 0 || years <= 0) {
+    document.getElementById("result").innerHTML = "<b style='color:#b00020'>กรุณากรอกข้อมูลให้ครบและถูกต้อง</b>";
+    return;
+  }
+
+  // ตรวจสอบวงเงินกู้สูงสุด (200 เท่าของเงินเดือน)
+  let maxLoan = monthlySalary * 200;
+  if (loanAmount > maxLoan) {
+    document.getElementById("result").innerHTML =
+      `<b style='color:#b00020'>วงเงินกู้สูงสุดคือ ${maxLoan.toLocaleString(undefined,{minimumFractionDigits:2})} บาท (200 เท่าของเงินเดือน) กรุณากรอกใหม่</b>`;
+    return;
+  }
+
+  // คำนวณค่างวดรายเดือน (PMT)
+  let monthlyPayment = (loanAmount * interestRate * Math.pow(1 + interestRate, months)) /
+                        (Math.pow(1 + interestRate, months) - 1);
+  if (isNaN(monthlyPayment) || !isFinite(monthlyPayment)) {
+    monthlyPayment = loanAmount / months;
+  }
+
+  // ตารางผ่อนชำระ 12 งวดแรก
+  let remaining = loanAmount;
+  let tableHtml = "<table><tr><th>งวด</th><th>ค่างวด</th><th>ดอกเบี้ย</th><th>เงินต้น</th><th>คงเหลือ</th></tr>";
+  for (let i = 1; i <= Math.min(12, months); i++) {
+    let interest = remaining * interestRate;
+    let principal = monthlyPayment - interest;
+    remaining -= principal;
+    tableHtml += `<tr><td>${i}</td><td>${monthlyPayment.toFixed(2)}</td><td>${interest.toFixed(2)}</td><td>${principal.toFixed(2)}</td><td>${Math.max(0,remaining).toFixed(2)}</td></tr>`;
+  }
+  tableHtml += "</table>";
+
+  document.getElementById("result").innerHTML = `
+    <h4>สรุปสินเชื่อบ้าน</h4>
+    <p>วงเงินกู้: ${loanAmount.toLocaleString()} บาท</p>
+    <p>อัตราดอกเบี้ย: ${(interestRate*1200).toFixed(2)}% ต่อปี</p>
+    <p>ระยะเวลา: ${years} ปี (${months} เดือน)</p>
+    <p><strong>ค่างวดต่อเดือน: ${monthlyPayment.toFixed(2)} บาท</strong></p>
+    <p>รวมทั้งสิ้น: ${(monthlyPayment*months).toFixed(2)} บาท</p>
+    <p>ดอกเบี้ยรวม: ${(monthlyPayment*months - loanAmount).toFixed(2)} บาท</p>
+    <p>ตารางผ่อนชำระ (12 งวดแรก):</p>
+    ${tableHtml}
+  `;
+}
+</script>
+</body>
+</html>
